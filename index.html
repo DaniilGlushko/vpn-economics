@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}</style>
+<title>Экономика своего VPN</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: answer strip on top, controls left / results right, facts and risks below. Utility tool, not a landing page. */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --fg:#1b2430; --muted:#5d6b7a; --line:#d7dde6;
+  --accent:#0f766e; --accent-ink:#ffffff; --soft:#e3f2ef;
+  --good:#1a7f37; --warn:#b45309; --bad:#b42318;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e141b; --panel:#161e27; --fg:#e6ebf0; --muted:#95a3b2; --line:#283442;
+  --accent:#2dd4bf; --accent-ink:#06211e; --soft:#12302d;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0e141b; --panel:#161e27; --fg:#e6ebf0; --muted:#95a3b2; --line:#283442;
+  --accent:#2dd4bf; --accent-ink:#06211e; --soft:#12302d;
+  --good:#4ade80; --warn:#fbbf24; --bad:#f87171; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:20px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.2}
+h1{font-size:clamp(1.6rem,3.2vw,2.3rem);font-weight:600}
+h2{font-size:1.1rem;font-weight:600}
+h3{font-size:.95rem;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.lede{color:var(--muted);max-width:68ch}
+header{display:grid;gap:8px}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.seg button{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:8px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg button:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg-note{font-size:.85rem;color:var(--muted)}
+
+.answer{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:4px;min-width:0}
+.kpi .l{font-size:.78rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+.kpi .v{font-family:var(--mono);font-size:1.6rem;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.15;overflow-wrap:anywhere}
+.kpi .s{font-size:.82rem;color:var(--muted)}
+.kpi.main{border-color:var(--accent);background:var(--soft)}
+.v.good{color:var(--good)} .v.bad{color:var(--bad)} .v.warn{color:var(--warn)}
+
+.grid{display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:14px;min-width:0}
+fieldset{border:0;padding:0;margin:0;display:grid;gap:10px}
+legend{font-weight:600;font-size:.9rem;padding:0;margin-bottom:4px}
+.ctl{display:grid;grid-template-columns:1fr 92px;gap:4px 10px;align-items:center}
+.ctl label{font-size:.88rem;grid-column:1/-1;display:flex;justify-content:space-between;gap:8px}
+.ctl label .hint{color:var(--muted);font-size:.78rem}
+.ctl input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+.ctl input[type=number]{font:inherit;font-family:var(--mono);font-size:.88rem;width:100%;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);text-align:right}
+.ctl input[type=number]::-webkit-inner-spin-button{opacity:1}
+
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.mini .kpi .v{font-size:1.2rem}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.84rem;font-variant-numeric:tabular-nums;min-width:720px}
+th,td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:500;color:var(--muted);background:var(--bg);position:sticky;top:0}
+td:first-child,th:first-child{text-align:left}
+td.num{font-family:var(--mono)}
+td.neg{color:var(--bad)} td.pos{color:var(--good)}
+tr.mark td{background:var(--soft)}
+tbody tr:last-child td{border-bottom:0}
+.note{font-size:.84rem;color:var(--muted)}
+
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+ul{margin:0;padding-left:18px;display:grid;gap:8px}
+li{font-size:.92rem}
+li .src{display:block;font-size:.8rem;color:var(--muted)}
+.plan ol{margin:0;padding-left:20px;display:grid;gap:8px}
+.plan li{font-size:.92rem}
+.tag{display:inline-block;font-size:.72rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-right:6px;vertical-align:middle}
+.tag.bad{border-color:var(--bad);color:var(--bad)} .tag.warn{border-color:var(--warn);color:var(--warn)}
+@media (prefers-reduced-motion:no-preference){.kpi .v{transition:color .2s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Расчёт на 1 ноября 2026 · курс 80 ₽/$ · аудитория: Россия и русскоязычные</div>
+  <h1>Экономика своего VPN</h1>
+  <p class="lede">Платная подписка на свой VPN для iPhone и Android. Разработку делаем вдвоём, поэтому в деньгах она почти ничего не стоит; считаются серверы, комиссии, налоги, юрлицо и аккаунты сторов. Крутите ползунки, цифры пересчитываются сразу.</p>
+  <div class="seg" role="group" aria-label="Вариант запуска">
+    <button type="button" data-preset="A" aria-pressed="true">1. Бот + готовые клиенты</button>
+    <button type="button" data-preset="AP" aria-pressed="false">2. + свой Android-клиент</button>
+    <button type="button" data-preset="B" aria-pressed="false">3. Свои приложения в сторах</button>
+  </div>
+  <p class="seg-note" id="presetNote"></p>
+</header>
+
+<section class="answer" aria-label="Главные цифры">
+  <div class="kpi main"><div class="l">Вложить всего</div><div class="v" id="kInvest">—</div><div class="s" id="kInvestS">стартовые траты плюс минусовые месяцы</div></div>
+  <div class="kpi"><div class="l">Выход в плюс</div><div class="v" id="kPayback">—</div><div class="s">месяц, когда вложения вернулись</div></div>
+  <div class="kpi"><div class="l">Прибыль через 12 мес</div><div class="v" id="kP12">—</div><div class="s" id="kP12S">в месяц, после всех расходов</div></div>
+  <div class="kpi"><div class="l">Прибыль на плато</div><div class="v" id="kPlateau">—</div><div class="s" id="kPlateauS">когда приток равен оттоку</div></div>
+</section>
+
+<div class="grid">
+  <aside class="panel" aria-label="Допущения">
+    <fieldset>
+      <legend>Тариф и база</legend>
+      <div class="ctl"><label for="arpu">Средний чек в месяц <span class="hint">рынок: 100–250 ₽, год ≈ 137 ₽/мес</span></label><input type="range" id="arpu" min="80" max="500" step="5" value="160"><input type="number" data-for="arpu" min="0" step="5" value="160"></div>
+      <div class="ctl"><label for="seed">Стартовая база, чел. <span class="hint">друзья и нынешние клиенты</span></label><input type="range" id="seed" min="0" max="200" step="5" value="30"><input type="number" data-for="seed" min="0" step="5" value="30"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Рост и отток</legend>
+      <div class="ctl"><label for="newpm">Новых в месяц <span class="hint">реклама VPN запрещена, только сарафан</span></label><input type="range" id="newpm" min="0" max="300" step="5" value="40"><input type="number" data-for="newpm" min="0" step="5" value="40"></div>
+      <div class="ctl"><label for="churn">Отток в месяц, % <span class="hint">подписки: 5–8 %, при блокировках выше</span></label><input type="range" id="churn" min="1" max="25" step="0.5" value="8"><input type="number" data-for="churn" min="0" step="0.5" value="8"></div>
+      <div class="ctl"><label for="cac">Привлечение одного, ₽ <span class="hint">бонус за реферала ≈ месяц бесплатно</span></label><input type="range" id="cac" min="0" max="1000" step="10" value="150"><input type="number" data-for="cac" min="0" step="10" value="150"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Инфраструктура</legend>
+      <div class="ctl"><label for="node">Нода, $/мес <span class="hint">Hetzner ≈ €6 + 20 ТБ, DO $12 + 2 ТБ</span></label><input type="range" id="node" min="5" max="40" step="1" value="15"><input type="number" data-for="node" min="0" step="1" value="15"></div>
+      <div class="ctl"><label for="upn">Пользователей на ноду <span class="hint">≈ 30 ГБ на человека, 7–8 ТБ на ноду</span></label><input type="range" id="upn" min="50" max="600" step="10" value="250"><input type="number" data-for="upn" min="1" step="10" value="250"></div>
+      <div class="ctl"><label for="ipres">Резерв на блокировки IP, % <span class="hint">запасные ноды и смена адресов</span></label><input type="range" id="ipres" min="0" max="100" step="5" value="30"><input type="number" data-for="ipres" min="0" step="5" value="30"></div>
+      <div class="ctl"><label for="fixed">Панель, бот, домены, ₽/мес <span class="hint">наш дроплет $12 + домены</span></label><input type="range" id="fixed" min="0" max="5000" step="100" value="1500"><input type="number" data-for="fixed" min="0" step="100" value="1500"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Комиссии и налоги</legend>
+      <div class="ctl"><label for="pay">Эквайринг, % <span class="hint">ЮKassa/СБП ≈ 3,5 %, крипта ≈ 1 %</span></label><input type="range" id="pay" min="0" max="10" step="0.5" value="3.5"><input type="number" data-for="pay" min="0" step="0.5" value="3.5"></div>
+      <div class="ctl"><label for="tax">Налог с выручки, % <span class="hint">НПД 4–6 %, ИП УСН 6 %</span></label><input type="range" id="tax" min="0" max="15" step="1" value="6"><input type="number" data-for="tax" min="0" step="1" value="6"></div>
+      <div class="ctl"><label for="store">Оплат через App Store / Google Play, % <span class="hint">комиссия 15 %; из РФ так платить нельзя</span></label><input type="range" id="store" min="0" max="100" step="5" value="0"><input type="number" data-for="store" min="0" max="100" step="5" value="0"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Вариант запуска</legend>
+      <div class="ctl"><label for="upfront">Стартовые траты, ₽ <span class="hint" id="upfrontHint"></span></label><input type="range" id="upfront" min="0" max="600000" step="5000" value="25000"><input type="number" data-for="upfront" min="0" step="5000" value="25000"></div>
+      <div class="ctl"><label for="extra">Постоянные расходы варианта, ₽/мес <span class="hint" id="extraHint"></span></label><input type="range" id="extra" min="0" max="60000" step="500" value="0"><input type="number" data-for="extra" min="0" step="500" value="0"></div>
+    </fieldset>
+  </aside>
+
+  <section class="panel" aria-label="Результат">
+    <div class="mini">
+      <div class="kpi"><div class="l">Безубыток</div><div class="v" id="kBE">—</div><div class="s">платящих, чтобы покрыть серверы и фикс</div></div>
+      <div class="kpi"><div class="l">Плато</div><div class="v" id="kUsers">—</div><div class="s">пользователей при таком притоке и оттоке</div></div>
+      <div class="kpi"><div class="l">LTV</div><div class="v" id="kLTV">—</div><div class="s" id="kLTVS">с одного пользователя за всё время</div></div>
+      <div class="kpi"><div class="l">LTV / CAC</div><div class="v" id="kRatio">—</div><div class="s">норма ≥ 3</div></div>
+      <div class="kpi"><div class="l">Себестоимость</div><div class="v" id="kCost">—</div><div class="s">инфраструктура на пользователя в месяц</div></div>
+      <div class="kpi"><div class="l">Нод на плато</div><div class="v" id="kNodes">—</div><div class="s">серверов с учётом резерва</div></div>
+    </div>
+    <h2>Помесячно, 24 месяца</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Мес.</th><th>Платящих</th><th>Выручка</th><th>Комиссии и налог</th><th>Серверы и фикс</th><th>Привлечение</th><th>Прибыль</th><th>Накоплено</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p class="note">Выручка = платящие × средний чек. Привлечение = новые × бонус. Накоплено стартует с минус стартовых трат. Ваше время и мои токены в деньгах не считаются.</p>
+  </section>
+</div>
+
+<div class="cols">
+  <section class="panel">
+    <h2>Что заложено и откуда</h2>
+    <ul>
+      <li><span class="tag bad">сторы</span>Apple удаляет VPN-клиенты из российского App Store по требованию РКН: 20+ в марте 2026 (Streisand, V2Box, v2RayTun, Happ), 27.10.2026 INCY. В других регионах они остаются.<span class="src"><a href="https://www.kommersant.ru/doc/8550078" target="_blank" rel="noopener">Коммерсантъ</a> · <a href="https://www.mentoday.ru/technics/news/27-10-2026/zachistka-vpn-prodoljaetsya-apple-udalila-iz-app-store-populyarnoe-prilojenie-dlya-obhoda-blokirovok/" target="_blank" rel="noopener">MenToday, 27.10.2026</a></span></li>
+      <li><span class="tag bad">оплата</span>С 1.04.2026 в App Store из РФ нельзя платить со счёта МТС/Билайн/МегаФон/Т2, рублёвых подарочных карт нет. Google Play не принимает платежи в РФ с 2022. Значит продажи через сторы российским пользователям ≈ 0, деньги идут через бота.<span class="src"><a href="https://vc.ru/services/2841895-kak-oplatit-app-store-v-rossii-posle-otklyucheniya-mts-i-bilayn" target="_blank" rel="noopener">vc.ru</a> · <a href="https://dnateam.ru/blog/kak-opublikovat-prilozhenie-v-google-play-i-rustore/" target="_blank" rel="noopener">dnateam.ru</a></span></li>
+      <li><span class="tag warn">apple</span>Guideline 5.4: VPN-приложение может публиковать только аккаунт-организация (юрлицо, номер D-U-N-S), через NEVPNManager. Членство $99/год, российской картой не оплатить.<span class="src"><a href="https://developer.apple.com/forums/thread/834624" target="_blank" rel="noopener">Apple Developer Forums</a> · <a href="https://vc.ru/services/2968860-oplata-apple-developer-program-iz-rossii-s-pomoshchyu-bybit-card" target="_blank" rel="noopener">vc.ru</a></span></li>
+      <li><span class="tag warn">юрлицо</span>Для аккаунта-организации нужна компания вне РФ. Ориентир из нашего сравнения юрисдикций от 31.10.2026: Гонконг — регистрация HK$12–20k (≈120–200 тыс. ₽), год с секретарём и аудитом HK$20–40k (≈200–400 тыс. ₽). Банковский счёт с паспортом РФ — главный риск везде. Грузия/Армения дешевле, но не проверялись.</li>
+      <li><span class="tag">комиссии</span>Сторы берут 15 % до $1 млн в год (Apple Small Business Program, подписки в Google Play).<span class="src"><a href="https://www.revenuecat.com/blog/engineering/small-business-program" target="_blank" rel="noopener">RevenueCat</a></span></li>
+      <li><span class="tag bad">закон</span>Реклама VPN запрещена с сентября 2025: штраф 50–80 тыс. ₽ гражданам, 200–500 тыс. ₽ юрлицам (281-ФЗ, ст. 14.3 КоАП). Первое решение УФАС по рекламе в Telegram уже есть. РКН к февралю 2026 ограничил 469 сервисов. Полного запрета VPN нет.<span class="src"><a href="https://www.securitylab.ru/analytics/558483.php" target="_blank" rel="noopener">SecurityLab</a> · <a href="https://habr.com/ru/news/1003760/" target="_blank" rel="noopener">Хабр</a> · <a href="https://www.securitylab.ru/news/568688.php" target="_blank" rel="noopener">SecurityLab: решение УФАС</a></span></li>
+      <li><span class="tag warn">протоколы</span>С 17.02.2026 ТСПУ детектят VLESS+TCP+Reality в настройке по умолчанию; держатся VLESS+gRPC/XHTTP+Reality и Hysteria2. Чистые WireGuard и OpenVPN режутся. Блокируют не только сервер, но и подсеть хостера, отсюда резерв на IP.<span class="src"><a href="https://traysub.net/blog/vless-tcp-reality-blokirovka-may-2026" target="_blank" rel="noopener">traysub</a> · <a href="https://oblako.sh/wiki/ru/rukovodstva/blokirovki-reality-self-steal" target="_blank" rel="noopener">oblako.sh</a></span></li>
+      <li><span class="tag bad">белые списки</span>При отключениях мобильного интернета работают только разрешённые IP, иностранный VPN «подключается, но не работает». Wi-Fi не затронут. Это главный источник оттока, деньгами не лечится.<span class="src"><a href="https://habr.com/ru/articles/1021160/" target="_blank" rel="noopener">Хабр</a> · <a href="https://bothelp.io/ru/blog/belye-spiski-interneta-v-rossii" target="_blank" rel="noopener">bothelp</a></span></li>
+      <li><span class="tag">хостинг</span>Hetzner CX23 ≈ €5,5–6 + IPv4 €0,5, 20 ТБ включено, цены в 2026 выросли на 30–37 %. DigitalOcean 2 ГБ $12 с 2 ТБ, неиспользуемый Reserved IP $5/мес. Aeza отключает серверы по спискам РКН.<span class="src"><a href="https://cloudtally.eu/hetzner-cloud-prices" target="_blank" rel="noopener">cloudtally</a> · <a href="https://docs.digitalocean.com/products/networking/reserved-ips/details/pricing" target="_blank" rel="noopener">DigitalOcean docs</a> · <a href="https://www.securitylab.ru/news/566895.php" target="_blank" rel="noopener">SecurityLab</a></span></li>
+      <li><span class="tag">цены рынка</span>VLESS-подписка в Telegram-боте: 100–250 ₽/мес, год ≈ 1 650 ₽ (137 ₽/мес), 3 устройства.<span class="src"><a href="https://vpn-rating.space/articles/top-18-telegram-vpn-botov-sravnenie.html" target="_blank" rel="noopener">обзор 18 ботов</a> · <a href="https://vlesswb.com/" target="_blank" rel="noopener">пример тарифов</a></span></li>
+      <li><span class="tag warn">платежи</span>ЮKassa в правилах не принимает «сервисы обхода ограничений», хотя у отдельных проектов платежи проходят. Telegram Stars теряют 30–40 % при выводе и держат 21 день. Крипта (USDT) ≈ 1 %.<span class="src"><a href="https://vc.ru/life/2335340-platezhnye-sistemy-dlya-vpn-v-2025" target="_blank" rel="noopener">vc.ru</a> · <a href="https://vc.ru/telegram/2948114-kak-vyvesti-zvezdy-iz-telegramma" target="_blank" rel="noopener">vc.ru про Stars</a></span></li>
+      <li><span class="tag">отток</span>Потребительские подписки теряют 5–8 % платящих в месяц; здоровое соотношение LTV к стоимости привлечения ≥ 3.<span class="src"><a href="https://www.eightx.co/blog/average-subscription-churn-rate-by-category" target="_blank" rel="noopener">Eightx</a></span></li>
+      <li><span class="tag">реклама</span>Подписчик в Telegram стоит 40–800 ₽, но для VPN этот канал закрыт законом. Рост только рефералкой и личными рекомендациями.<span class="src"><a href="https://ppc.world/articles/skolko-stoit-podpischik-v-telegram-obzor-50-tematik/" target="_blank" rel="noopener">ppc.world</a></span></li>
+    </ul>
+  </section>
+
+  <section class="panel plan">
+    <h2>Что делаем вдвоём</h2>
+    <h3>Вариант 1 · бот + готовые клиенты · 3–4 недели</h3>
+    <ol>
+      <li>Панель (Remnawave или наш 3x-ui) и 2–3 ноды у разных хостеров: VLESS+XHTTP/gRPC+Reality и Hysteria2 как запасной.</li>
+      <li>Telegram-бот: тарифы, оплата (СБП/карта через эквайринг, USDT как резерв), выдача ссылки-подписки, продление, рефералка «месяц за друга».</li>
+      <li>Инструкции под Happ, Streisand, v2RayTun, Hiddify. Мониторинг доступности IP из РФ (скрипты у нас уже есть) и автоматическая смена адреса.</li>
+      <li>Запуск на друзьях и нынешних клиентах, потом по рекомендациям.</li>
+    </ol>
+    <h3>Вариант 2 · свой Android-клиент · ещё 3–4 недели</h3>
+    <ol>
+      <li>Форк Hiddify (Flutter, ядро sing-box + Xray, open source): свой бренд, зашитый адрес подписки, автообновление.</li>
+      <li>Раздача APK через бота и сайт, при желании RuStore. iPhone по-прежнему через готовые клиенты.</li>
+    </ol>
+    <h3>Вариант 3 · сторы · 3–4 месяца и юрлицо</h3>
+    <ol>
+      <li>Компания вне РФ, D-U-N-S, Apple Developer как организация ($99/год), Google Play ($25).</li>
+      <li>iOS-сборка форка на Network Extension, прохождение ревью по 5.4, Google Play и RuStore.</li>
+      <li>Для российских пользователей приложение в App Store живёт до первого требования РКН, оплата всё равно через бота. Смысл появляется при выходе на СНГ и зарубежье.</li>
+    </ol>
+    <h2>Риски, которых нет в рублях</h2>
+    <ul>
+      <li>Сервис без подключения к реестру РКН блокируют. Продажа VPN жителям РФ под своим именем и ИП — юридически уязвимая конструкция, это нужно решить до запуска, а не после.</li>
+      <li>Эквайринг могут отключить в любой момент. Второй канал оплаты нужен с первого дня.</li>
+      <li>Волна блокировок протокола или белые списки за неделю удваивают отток. Резерв на IP в расчёте есть, резерв на репутацию нет.</li>
+      <li>Один человек на поддержке: при 500 пользователях это 1–2 часа в день сообщений «не работает».</li>
+    </ul>
+  </section>
+</div>
+</div>
+
+<script id="model">
+var RATE = 80;
+var PRESETS = {
+  A:  { upfront: 25000,  extra: 0,     store: 0, note: 'Панель, бот и готовые клиенты по ссылке-подписке. Деньги: домены, первые серверы, бонусы за рефералов. Времени: 3–4 недели.', up: 'домены, серверы, бонусы', ex: 'нет' },
+  AP: { upfront: 30000,  extra: 0,     store: 0, note: 'То же плюс свой Android-клиент (форк Hiddify под нашим брендом). Денег почти столько же, времени 6–8 недель.', up: '+ аккаунт разработчика, тесты', ex: 'нет' },
+  B:  { upfront: 250000, extra: 25000, store: 0, note: 'Свои приложения в App Store и Google Play: компания вне РФ, D-U-N-S, Apple как организация. Времени 3–4 месяца.', up: 'юрлицо ≈ 200 тыс., Apple $99, Google $25', ex: 'обслуживание юрлица и аккаунтов' }
+};
+function infra(users, p) {
+  var nodes = Math.max(1, Math.ceil(users / Math.max(1, p.upn)));
+  return { nodes: nodes, cost: nodes * p.node * RATE * (1 + p.ipres / 100) + p.fixed + p.extra };
+}
+function model(p) {
+  var feeRate = (p.pay / 100) * (1 - p.store / 100) + 0.15 * (p.store / 100) + p.tax / 100;
+  var netArpu = p.arpu * (1 - feeRate);
+  var users = p.seed, cum = -p.upfront, minCum = cum, payback = null, rows = [];
+  for (var m = 1; m <= 24; m++) {
+    users = users * (1 - p.churn / 100) + p.newpm;
+    var rev = users * p.arpu, fees = rev * feeRate, inf = infra(users, p), acq = p.newpm * p.cac;
+    var profit = rev - fees - inf.cost - acq;
+    cum += profit;
+    if (cum < minCum) minCum = cum;
+    if (payback === null && cum >= 0) payback = m;
+    rows.push({ m: m, users: users, rev: rev, fees: fees, inf: inf.cost, nodes: inf.nodes, acq: acq, profit: profit, cum: cum });
+  }
+  var plateau = p.churn > 0 ? p.newpm / (p.churn / 100) : Infinity;
+  var plateauProfit = null, plateauNodes = null, costPerUser = null;
+  if (isFinite(plateau) && plateau > 0) {
+    var pi = infra(plateau, p);
+    plateauProfit = plateau * netArpu - pi.cost - p.newpm * p.cac;
+    plateauNodes = pi.nodes;
+    costPerUser = pi.cost / plateau;
+  }
+  var be = null;
+  if (netArpu > 0) for (var n = 1; n <= 20000; n++) { if (n * netArpu >= infra(n, p).cost) { be = n; break; } }
+  var ltv = p.churn > 0 ? netArpu / (p.churn / 100) : Infinity;
+  return { rows: rows, invest: -minCum, payback: payback, p12: rows[11].profit, p24: rows[23].profit,
+           plateau: plateau, plateauProfit: plateauProfit, plateauNodes: plateauNodes, costPerUser: costPerUser,
+           be: be, ltv: ltv, ratio: p.cac > 0 ? ltv / p.cac : Infinity, netArpu: netArpu };
+}
+</script>
+<script>
+(function () {
+  var FIELDS = ['seed','newpm','churn','arpu','cac','node','upn','ipres','fixed','pay','tax','store','upfront','extra'];
+  var $ = function (id) { return document.getElementById(id); };
+  var nf = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
+  var fmt = function (n) { return nf.format(Math.round(n)); };
+  var rub = function (n) { return fmt(n) + ' ₽'; };
+  var rubK = function (n) { return Math.abs(n) >= 1e6 ? (n / 1e6).toLocaleString('ru-RU', { maximumFractionDigits: 2 }) + ' млн ₽' : (Math.abs(n) >= 10000 ? fmt(n / 1000) + ' тыс. ₽' : rub(n)); };
+  var months = function (m) { return m + ' ' + (m % 10 === 1 && m !== 11 ? 'месяц' : (m % 10 >= 2 && m % 10 <= 4 && (m < 12 || m > 14) ? 'месяца' : 'месяцев')); };
+
+  function read() { var p = {}; FIELDS.forEach(function (f) { p[f] = parseFloat($(f).value) || 0; }); return p; }
+  function setV(id, text, cls) { var el = $(id); el.textContent = text; el.className = 'v' + (cls ? ' ' + cls : ''); }
+
+  function render() {
+    var p = read(), r = model(p);
+    setV('kInvest', rubK(r.invest));
+    $('kInvestS').textContent = r.invest > p.upfront + 1 ? 'стартовые ' + rubK(p.upfront) + ' плюс минусовые месяцы' : 'только стартовые траты, дальше в плюсе';
+    if (r.payback === null) setV('kPayback', 'нет за 2 года', 'bad');
+    else setV('kPayback', months(r.payback), r.payback <= 6 ? 'good' : (r.payback <= 12 ? 'warn' : 'bad'));
+    setV('kP12', rubK(r.p12) + '/мес', r.p12 >= 0 ? 'good' : 'bad');
+    $('kP12S').textContent = '≈ ' + fmt(r.p12 / RATE) + ' $/мес, через 24 мес ' + rubK(r.p24) + '/мес';
+    if (isFinite(r.plateau)) {
+      setV('kPlateau', rubK(r.plateauProfit) + '/мес', r.plateauProfit >= 0 ? 'good' : 'bad');
+      $('kPlateauS').textContent = 'при ' + fmt(r.plateau) + ' платящих, ≈ ' + fmt(r.plateauProfit / RATE) + ' $/мес';
+      setV('kUsers', fmt(r.plateau));
+      setV('kNodes', fmt(r.plateauNodes));
+      setV('kCost', rub(r.costPerUser));
+    } else {
+      setV('kPlateau', 'растёт без предела'); $('kPlateauS').textContent = 'отток 0 % не бывает'; setV('kUsers', '∞'); setV('kNodes', '—'); setV('kCost', '—');
+    }
+    setV('kBE', r.be === null ? 'не сходится' : fmt(r.be) + ' чел.', r.be === null ? 'bad' : '');
+    setV('kLTV', isFinite(r.ltv) ? rub(r.ltv) : '∞');
+    $('kLTVS').textContent = 'чистыми ' + rub(r.netArpu) + '/мес × ' + (p.churn > 0 ? (100 / p.churn).toFixed(1) : '∞') + ' мес жизни';
+    setV('kRatio', isFinite(r.ratio) ? r.ratio.toFixed(1) : '∞', isFinite(r.ratio) ? (r.ratio >= 3 ? 'good' : (r.ratio >= 1.5 ? 'warn' : 'bad')) : 'good');
+
+    var html = '';
+    r.rows.forEach(function (x) {
+      var mark = (r.payback === x.m) ? ' class="mark"' : '';
+      html += '<tr' + mark + '><td>' + x.m + '</td><td class="num">' + fmt(x.users) + '</td><td class="num">' + fmt(x.rev) + '</td><td class="num">−' + fmt(x.fees) + '</td><td class="num">−' + fmt(x.inf) + ' <span class="note">(' + x.nodes + ' нод)</span></td><td class="num">−' + fmt(x.acq) + '</td><td class="num ' + (x.profit >= 0 ? 'pos' : 'neg') + '">' + fmt(x.profit) + '</td><td class="num ' + (x.cum >= 0 ? 'pos' : 'neg') + '">' + fmt(x.cum) + '</td></tr>';
+    });
+    $('rows').innerHTML = html;
+  }
+
+  function applyPreset(key) {
+    var ps = PRESETS[key];
+    ['upfront', 'extra', 'store'].forEach(function (f) { $(f).value = ps[f]; document.querySelector('input[data-for="' + f + '"]').value = ps[f]; });
+    $('presetNote').textContent = ps.note;
+    $('upfrontHint').textContent = ps.up;
+    $('extraHint').textContent = ps.ex;
+    document.querySelectorAll('.seg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.preset === key)); });
+    try { localStorage.setItem('vpn-econ-preset', key); } catch (e) {}
+    render();
+  }
+
+  FIELDS.forEach(function (f) {
+    var range = $(f), num = document.querySelector('input[data-for="' + f + '"]');
+    range.addEventListener('input', function () { num.value = range.value; render(); });
+    num.addEventListener('input', function () { if (num.value !== '') { range.value = num.value; render(); } });
+  });
+  document.querySelectorAll('.seg button').forEach(function (b) { b.addEventListener('click', function () { applyPreset(b.dataset.preset); }); });
+
+  var start = 'A';
+  try { var saved = localStorage.getItem('vpn-econ-preset'); if (saved && PRESETS[saved]) start = saved; } catch (e) {}
+  applyPreset(start);
+})();
+</script>
+</body>
+</html>
