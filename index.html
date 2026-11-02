@@ -311,7 +311,7 @@ function model(p) {
     $('kRatioS').textContent = 'норма ≥ 3; у рефералки ' + (isFinite(r.ratioOrg) ? r.ratioOrg.toFixed(1) : '∞');
     setV('kAdPay', isFinite(r.cpaPayMonths) ? r.cpaPayMonths.toFixed(1) + ' мес' : '—', r.cpaPayMonths <= 3 ? 'good' : (r.cpaPayMonths <= 100 / Math.max(p.churnad, 0.1) / 2 ? 'warn' : 'bad'));
     setV('kAdUsers', p.adbud > 0 && isFinite(r.plAd) ? fmt(r.plAd) : '0');
-    $('kAdUsersS').textContent = p.adbud > 0 ? 'платящих; за 2 года реклама ' + rubK(r.adSpent) + ' → ' + fmt(r.adUsers) + ' оплат' : 'реклама выключена';
+    $('kAdUsersS').textContent = p.adbud > 0 ? 'платящих; за 2 года реклама ' + rubK(r.adSpent) + ' → ' + fmt(r.adUsers) + ' новых платящих' : 'реклама выключена';
 
     var html = '';
     r.rows.forEach(function (x) {
