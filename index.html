@@ -92,9 +92,9 @@ li .src{display:block;font-size:.8rem;color:var(--muted)}
 
 <div class="wrap">
 <header>
-  <div class="eyebrow">Расчёт на 1 ноября 2026 · курс 80 ₽/$ · аудитория: Россия и русскоязычные</div>
+  <div class="eyebrow">Расчёт на 2 ноября 2026 · курс 80 ₽/$ · аудитория: Россия и русскоязычные</div>
   <h1>Экономика своего VPN</h1>
-  <p class="lede">Платная подписка на свой VPN для iPhone и Android. Разработку делаем вдвоём, поэтому в деньгах она почти ничего не стоит; считаются серверы, комиссии, налоги, юрлицо и аккаунты сторов. Крутите ползунки, цифры пересчитываются сразу.</p>
+  <p class="lede">Платная подписка на свой VPN для iPhone и Android. Разработку делаем вдвоём, поэтому в деньгах она почти ничего не стоит; считаются серверы, реклама, комиссии, налоги, юрлицо и аккаунты сторов. Крутите ползунки, цифры пересчитываются сразу.</p>
   <div class="seg" role="group" aria-label="Вариант запуска">
     <button type="button" data-preset="A" aria-pressed="true">1. Бот + готовые клиенты</button>
     <button type="button" data-preset="AP" aria-pressed="false">2. + свой Android-клиент</button>
@@ -119,9 +119,17 @@ li .src{display:block;font-size:.8rem;color:var(--muted)}
     </fieldset>
     <fieldset>
       <legend>Рост и отток</legend>
-      <div class="ctl"><label for="newpm">Новых в месяц <span class="hint">реклама VPN запрещена, только сарафан</span></label><input type="range" id="newpm" min="0" max="300" step="5" value="40"><input type="number" data-for="newpm" min="0" step="5" value="40"></div>
-      <div class="ctl"><label for="churn">Отток в месяц, % <span class="hint">подписки: 5–8 %, при блокировках выше</span></label><input type="range" id="churn" min="1" max="25" step="0.5" value="8"><input type="number" data-for="churn" min="0" step="0.5" value="8"></div>
-      <div class="ctl"><label for="cac">Привлечение одного, ₽ <span class="hint">бонус за реферала ≈ месяц бесплатно</span></label><input type="range" id="cac" min="0" max="1000" step="10" value="150"><input type="number" data-for="cac" min="0" step="10" value="150"></div>
+      <div class="ctl"><label for="newpm">Новых по рекомендациям в месяц <span class="hint">друзья, рефералка, сарафан</span></label><input type="range" id="newpm" min="0" max="300" step="5" value="40"><input type="number" data-for="newpm" min="0" step="5" value="40"></div>
+      <div class="ctl"><label for="churn">Отток «своих», % в месяц <span class="hint">подписки: 5–8 %, при блокировках выше</span></label><input type="range" id="churn" min="1" max="25" step="0.5" value="8"><input type="number" data-for="churn" min="0" step="0.5" value="8"></div>
+      <div class="ctl"><label for="cac">Бонус за реферала, ₽ <span class="hint">≈ месяц бесплатно другу</span></label><input type="range" id="cac" min="0" max="1000" step="10" value="150"><input type="number" data-for="cac" min="0" step="10" value="150"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Реклама в Telegram</legend>
+      <div class="ctl"><label for="adbud">Рекламный бюджет, ₽/мес <span class="hint">вход через реселлера от €250–500 + 15–20 %</span></label><input type="range" id="adbud" min="0" max="300000" step="5000" value="50000"><input type="number" data-for="adbud" min="0" step="5000" value="50000"></div>
+      <div class="ctl"><label for="cpa">Цена платящего из рекламы, ₽ <span class="hint">кто заплатил полную цену, не пробник</span></label><input type="range" id="cpa" min="100" max="3000" step="50" value="700"><input type="number" data-for="cpa" min="1" step="50" value="700"></div>
+      <div class="ctl"><label for="rampx">Дороже на старте, × <span class="hint">обучение кабинета, баны креативов</span></label><input type="range" id="rampx" min="1" max="4" step="0.5" value="2"><input type="number" data-for="rampx" min="1" step="0.5" value="2"></div>
+      <div class="ctl"><label for="rampm">Сколько месяцев дорого <span class="hint">пока не найдены связки</span></label><input type="range" id="rampm" min="0" max="6" step="1" value="3"><input type="number" data-for="rampm" min="0" step="1" value="3"></div>
+      <div class="ctl"><label for="churnad">Отток рекламных, % в месяц <span class="hint">холодные уходят быстрее своих</span></label><input type="range" id="churnad" min="2" max="30" step="0.5" value="12"><input type="number" data-for="churnad" min="0" step="0.5" value="12"></div>
     </fieldset>
     <fieldset>
       <legend>Инфраструктура</legend>
@@ -147,17 +155,19 @@ li .src{display:block;font-size:.8rem;color:var(--muted)}
     <div class="mini">
       <div class="kpi"><div class="l">Безубыток</div><div class="v" id="kBE">—</div><div class="s">платящих, чтобы покрыть серверы и фикс</div></div>
       <div class="kpi"><div class="l">Плато</div><div class="v" id="kUsers">—</div><div class="s">пользователей при таком притоке и оттоке</div></div>
-      <div class="kpi"><div class="l">LTV</div><div class="v" id="kLTV">—</div><div class="s" id="kLTVS">с одного пользователя за всё время</div></div>
-      <div class="kpi"><div class="l">LTV / CAC</div><div class="v" id="kRatio">—</div><div class="s">норма ≥ 3</div></div>
+      <div class="kpi"><div class="l">LTV</div><div class="v" id="kLTV">—</div><div class="s" id="kLTVS">с одного «своего» за всё время</div></div>
+      <div class="kpi"><div class="l">LTV / цена из рекламы</div><div class="v" id="kRatio">—</div><div class="s" id="kRatioS">норма ≥ 3</div></div>
+      <div class="kpi"><div class="l">Рекламный окупается</div><div class="v" id="kAdPay">—</div><div class="s">через столько месяцев платит за себя</div></div>
+      <div class="kpi"><div class="l">Из рекламы на плато</div><div class="v" id="kAdUsers">—</div><div class="s" id="kAdUsersS">платящих</div></div>
       <div class="kpi"><div class="l">Себестоимость</div><div class="v" id="kCost">—</div><div class="s">инфраструктура на пользователя в месяц</div></div>
       <div class="kpi"><div class="l">Нод на плато</div><div class="v" id="kNodes">—</div><div class="s">серверов с учётом резерва</div></div>
     </div>
     <h2>Помесячно, 24 месяца</h2>
     <div class="tbl"><table>
-      <thead><tr><th>Мес.</th><th>Платящих</th><th>Выручка</th><th>Комиссии и налог</th><th>Серверы и фикс</th><th>Привлечение</th><th>Прибыль</th><th>Накоплено</th></tr></thead>
+      <thead><tr><th>Мес.</th><th>Платящих (из рекламы)</th><th>Выручка</th><th>Комиссии и налог</th><th>Серверы и фикс</th><th>Реклама и бонусы</th><th>Прибыль</th><th>Накоплено</th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
-    <p class="note">Выручка = платящие × средний чек. Привлечение = новые × бонус. Накоплено стартует с минус стартовых трат. Ваше время и мои токены в деньгах не считаются.</p>
+    <p class="note">Выручка = платящие × средний чек. Реклама и бонусы = рекламный бюджет + новые по рекомендациям × бонус. Рекламные и «свои» уходят с разной скоростью. Накоплено стартует с минус стартовых трат. Ваше время и мои токены в деньгах не считаются.</p>
   </section>
 </div>
 
@@ -170,14 +180,16 @@ li .src{display:block;font-size:.8rem;color:var(--muted)}
       <li><span class="tag warn">apple</span>Guideline 5.4: VPN-приложение может публиковать только аккаунт-организация (юрлицо, номер D-U-N-S), через NEVPNManager. Членство $99/год, российской картой не оплатить.<span class="src"><a href="https://developer.apple.com/forums/thread/834624" target="_blank" rel="noopener">Apple Developer Forums</a> · <a href="https://vc.ru/services/2968860-oplata-apple-developer-program-iz-rossii-s-pomoshchyu-bybit-card" target="_blank" rel="noopener">vc.ru</a></span></li>
       <li><span class="tag warn">юрлицо</span>Для аккаунта-организации нужна компания вне РФ. Ориентир из нашего сравнения юрисдикций от 31.10.2026: Гонконг — регистрация HK$12–20k (≈120–200 тыс. ₽), год с секретарём и аудитом HK$20–40k (≈200–400 тыс. ₽). Банковский счёт с паспортом РФ — главный риск везде. Грузия/Армения дешевле, но не проверялись.</li>
       <li><span class="tag">комиссии</span>Сторы берут 15 % до $1 млн в год (Apple Small Business Program, подписки в Google Play).<span class="src"><a href="https://www.revenuecat.com/blog/engineering/small-business-program" target="_blank" rel="noopener">RevenueCat</a></span></li>
-      <li><span class="tag bad">закон</span>Реклама VPN запрещена с сентября 2025: штраф 50–80 тыс. ₽ гражданам, 200–500 тыс. ₽ юрлицам (281-ФЗ, ст. 14.3 КоАП). Первое решение УФАС по рекламе в Telegram уже есть. РКН к февралю 2026 ограничил 469 сервисов. Полного запрета VPN нет.<span class="src"><a href="https://www.securitylab.ru/analytics/558483.php" target="_blank" rel="noopener">SecurityLab</a> · <a href="https://habr.com/ru/news/1003760/" target="_blank" rel="noopener">Хабр</a> · <a href="https://www.securitylab.ru/news/568688.php" target="_blank" rel="noopener">SecurityLab: решение УФАС</a></span></li>
+      <li><span class="tag bad">закон</span>Реклама VPN запрещена с сентября 2025: штраф 50–80 тыс. ₽ гражданам, 200–500 тыс. ₽ юрлицам (281-ФЗ, ст. 14.3 КоАП). Первое решение УФАС по рекламе в Telegram уже есть. Отсрочка ФАС для Telegram до конца 2026 на рекламу VPN не распространяется, и маркировка erid от штрафа не спасает. РКН к февралю 2026 ограничил 469 сервисов. Полного запрета VPN нет.<span class="src"><a href="https://www.securitylab.ru/analytics/558483.php" target="_blank" rel="noopener">SecurityLab</a> · <a href="https://www.cnews.ru/news/top/2026-01-28_fas_vpervye_priznala_reklamu" target="_blank" rel="noopener">CNews</a> · <a href="https://habr.com/ru/news/1003760/" target="_blank" rel="noopener">Хабр</a> · <a href="https://www.securitylab.ru/news/568688.php" target="_blank" rel="noopener">SecurityLab: решение УФАС</a></span></li>
       <li><span class="tag warn">протоколы</span>С 17.02.2026 ТСПУ детектят VLESS+TCP+Reality в настройке по умолчанию; держатся VLESS+gRPC/XHTTP+Reality и Hysteria2. Чистые WireGuard и OpenVPN режутся. Блокируют не только сервер, но и подсеть хостера, отсюда резерв на IP.<span class="src"><a href="https://traysub.net/blog/vless-tcp-reality-blokirovka-may-2026" target="_blank" rel="noopener">traysub</a> · <a href="https://oblako.sh/wiki/ru/rukovodstva/blokirovki-reality-self-steal" target="_blank" rel="noopener">oblako.sh</a></span></li>
       <li><span class="tag bad">белые списки</span>При отключениях мобильного интернета работают только разрешённые IP, иностранный VPN «подключается, но не работает». Wi-Fi не затронут. Это главный источник оттока, деньгами не лечится.<span class="src"><a href="https://habr.com/ru/articles/1021160/" target="_blank" rel="noopener">Хабр</a> · <a href="https://bothelp.io/ru/blog/belye-spiski-interneta-v-rossii" target="_blank" rel="noopener">bothelp</a></span></li>
       <li><span class="tag">хостинг</span>Hetzner CX23 ≈ €5,5–6 + IPv4 €0,5, 20 ТБ включено, цены в 2026 выросли на 30–37 %. DigitalOcean 2 ГБ $12 с 2 ТБ, неиспользуемый Reserved IP $5/мес. Aeza отключает серверы по спискам РКН.<span class="src"><a href="https://cloudtally.eu/hetzner-cloud-prices" target="_blank" rel="noopener">cloudtally</a> · <a href="https://docs.digitalocean.com/products/networking/reserved-ips/details/pricing" target="_blank" rel="noopener">DigitalOcean docs</a> · <a href="https://www.securitylab.ru/news/566895.php" target="_blank" rel="noopener">SecurityLab</a></span></li>
       <li><span class="tag">цены рынка</span>VLESS-подписка в Telegram-боте: 100–250 ₽/мес, год ≈ 1 650 ₽ (137 ₽/мес), 3 устройства.<span class="src"><a href="https://vpn-rating.space/articles/top-18-telegram-vpn-botov-sravnenie.html" target="_blank" rel="noopener">обзор 18 ботов</a> · <a href="https://vlesswb.com/" target="_blank" rel="noopener">пример тарифов</a></span></li>
       <li><span class="tag warn">платежи</span>ЮKassa в правилах не принимает «сервисы обхода ограничений», хотя у отдельных проектов платежи проходят. Telegram Stars теряют 30–40 % при выводе и держат 21 день. Крипта (USDT) ≈ 1 %.<span class="src"><a href="https://vc.ru/life/2335340-platezhnye-sistemy-dlya-vpn-v-2025" target="_blank" rel="noopener">vc.ru</a> · <a href="https://vc.ru/telegram/2948114-kak-vyvesti-zvezdy-iz-telegramma" target="_blank" rel="noopener">vc.ru про Stars</a></span></li>
       <li><span class="tag">отток</span>Потребительские подписки теряют 5–8 % платящих в месяц; здоровое соотношение LTV к стоимости привлечения ≥ 3.<span class="src"><a href="https://www.eightx.co/blog/average-subscription-churn-rate-by-category" target="_blank" rel="noopener">Eightx</a></span></li>
-      <li><span class="tag">реклама</span>Подписчик в Telegram стоит 40–800 ₽, но для VPN этот канал закрыт законом. Рост только рефералкой и личными рекомендациями.<span class="src"><a href="https://ppc.world/articles/skolko-stoit-podpischik-v-telegram-obzor-50-tematik/" target="_blank" rel="noopener">ppc.world</a></span></li>
+      <li><span class="tag warn">telegram ads</span>Напрямую вход от €2 млн, поэтому через реселлеров: eLama от €250 (комиссия 10–20 %), Magnetto и OneSpot от €500. CPM в 2026 в среднем €0,5–1, в конкурентных нишах €2,5–5. Слова «VPN» и «обход блокировок» модерация режет, креативы приходится маскировать.<span class="src"><a href="https://habr.com/ru/articles/1020174/" target="_blank" rel="noopener">Хабр</a> · <a href="https://elama.ru/blog/skolko-stoit-reklama-v-telegram/" target="_blank" rel="noopener">eLama</a> · <a href="https://kod.ru/telegram-ads-cheaper-q2-2026" target="_blank" rel="noopener">kod.ru</a></span></li>
+      <li><span class="tag warn">кейсы</span>VPN-бот в Telegram Ads, май 2025, до запрета: 70 тыс. ₽ → 3 000+ запусков, 521 первая оплата, то есть ≈134 ₽ за оплату. Но первая оплата — пробник, продление стоило 99 ₽, удержания в кейсе нет. Если продлевает каждый третий, полноценный платящий стоит ≈400 ₽, плюс комиссия реселлера и дорогой старт. Отсюда 700 ₽ по умолчанию.<span class="src"><a href="https://vc.ru/marketing/1975475-prodvizhenie-vpn-bota-cherez-telegram-ads" target="_blank" rel="noopener">vc.ru</a></span></li>
+      <li><span class="tag">посевы</span>Размещения в каналах: 30–250 ₽ за подписчика канала, до оплаты доходит малая часть; до 30 % каналов с накруткой.<span class="src"><a href="https://ppc.world/articles/skolko-stoit-podpischik-v-telegram-obzor-50-tematik/" target="_blank" rel="noopener">ppc.world</a> · <a href="https://fedotovseo.ru/blog/stoimost-reklamy-telegram-2026/" target="_blank" rel="noopener">fedotovseo</a></span></li>
     </ul>
   </section>
 
@@ -188,7 +200,7 @@ li .src{display:block;font-size:.8rem;color:var(--muted)}
       <li>Панель (Remnawave или наш 3x-ui) и 2–3 ноды у разных хостеров: VLESS+XHTTP/gRPC+Reality и Hysteria2 как запасной.</li>
       <li>Telegram-бот: тарифы, оплата (СБП/карта через эквайринг, USDT как резерв), выдача ссылки-подписки, продление, рефералка «месяц за друга».</li>
       <li>Инструкции под Happ, Streisand, v2RayTun, Hiddify. Мониторинг доступности IP из РФ (скрипты у нас уже есть) и автоматическая смена адреса.</li>
-      <li>Запуск на друзьях и нынешних клиентах, потом по рекомендациям.</li>
+      <li>Запуск на друзьях и нынешних клиентах. Реклама только после того, как бот держит оплату и продления: тест на €250–500, считаем цену продлившего, а не первой оплаты.</li>
     </ol>
     <h3>Вариант 2 · свой Android-клиент · ещё 3–4 недели</h3>
     <ol>
@@ -204,6 +216,7 @@ li .src{display:block;font-size:.8rem;color:var(--muted)}
     <h2>Риски, которых нет в рублях</h2>
     <ul>
       <li>Сервис без подключения к реестру РКН блокируют. Продажа VPN жителям РФ под своим именем и ИП — юридически уязвимая конструкция, это нужно решить до запуска, а не после.</li>
+      <li>Каждая рекламная кампания VPN — потенциальный штраф 200–500 тыс. ₽ для компании или 50–80 тыс. ₽ для человека. Один штраф съедает 4–10 месяцев рекламного бюджета.</li>
       <li>Эквайринг могут отключить в любой момент. Второй канал оплаты нужен с первого дня.</li>
       <li>Волна блокировок протокола или белые списки за неделю удваивают отток. Резерв на IP в расчёте есть, резерв на репутацию нет.</li>
       <li>Один человек на поддержке: при 500 пользователях это 1–2 часа в день сообщений «не работает».</li>
@@ -223,38 +236,47 @@ function infra(users, p) {
   var nodes = Math.max(1, Math.ceil(users / Math.max(1, p.upn)));
   return { nodes: nodes, cost: nodes * p.node * RATE * (1 + p.ipres / 100) + p.fixed + p.extra };
 }
+function adCpa(m, p) { return p.cpa * (m <= p.rampm ? p.rampx : 1); }
 function model(p) {
   var feeRate = (p.pay / 100) * (1 - p.store / 100) + 0.15 * (p.store / 100) + p.tax / 100;
   var netArpu = p.arpu * (1 - feeRate);
-  var users = p.seed, cum = -p.upfront, minCum = cum, payback = null, rows = [];
+  var org = p.seed, paid = 0, cum = -p.upfront, minCum = cum, payback = null, rows = [], adSpent = 0, adUsers = 0;
   for (var m = 1; m <= 24; m++) {
-    users = users * (1 - p.churn / 100) + p.newpm;
-    var rev = users * p.arpu, fees = rev * feeRate, inf = infra(users, p), acq = p.newpm * p.cac;
+    var adNew = p.cpa > 0 ? p.adbud / adCpa(m, p) : 0;
+    org = org * (1 - p.churn / 100) + p.newpm;
+    paid = paid * (1 - p.churnad / 100) + adNew;
+    var users = org + paid;
+    var rev = users * p.arpu, fees = rev * feeRate, inf = infra(users, p);
+    var acq = p.newpm * p.cac + p.adbud;
     var profit = rev - fees - inf.cost - acq;
-    cum += profit;
+    cum += profit; adSpent += p.adbud; adUsers += adNew;
     if (cum < minCum) minCum = cum;
     if (payback === null && cum >= 0) payback = m;
-    rows.push({ m: m, users: users, rev: rev, fees: fees, inf: inf.cost, nodes: inf.nodes, acq: acq, profit: profit, cum: cum });
+    rows.push({ m: m, users: users, paid: paid, adNew: adNew, rev: rev, fees: fees, inf: inf.cost, nodes: inf.nodes, acq: acq, profit: profit, cum: cum });
   }
-  var plateau = p.churn > 0 ? p.newpm / (p.churn / 100) : Infinity;
+  var adNewSteady = p.cpa > 0 ? p.adbud / p.cpa : 0;
+  var plOrg = p.churn > 0 ? p.newpm / (p.churn / 100) : Infinity;
+  var plAd = p.churnad > 0 ? adNewSteady / (p.churnad / 100) : Infinity;
+  var plateau = plOrg + plAd;
   var plateauProfit = null, plateauNodes = null, costPerUser = null;
   if (isFinite(plateau) && plateau > 0) {
     var pi = infra(plateau, p);
-    plateauProfit = plateau * netArpu - pi.cost - p.newpm * p.cac;
-    plateauNodes = pi.nodes;
-    costPerUser = pi.cost / plateau;
+    plateauProfit = plateau * netArpu - pi.cost - p.newpm * p.cac - p.adbud;
+    plateauNodes = pi.nodes; costPerUser = pi.cost / plateau;
   }
   var be = null;
   if (netArpu > 0) for (var n = 1; n <= 20000; n++) { if (n * netArpu >= infra(n, p).cost) { be = n; break; } }
   var ltv = p.churn > 0 ? netArpu / (p.churn / 100) : Infinity;
+  var ltvAd = p.churnad > 0 ? netArpu / (p.churnad / 100) : Infinity;
   return { rows: rows, invest: -minCum, payback: payback, p12: rows[11].profit, p24: rows[23].profit,
-           plateau: plateau, plateauProfit: plateauProfit, plateauNodes: plateauNodes, costPerUser: costPerUser,
-           be: be, ltv: ltv, ratio: p.cac > 0 ? ltv / p.cac : Infinity, netArpu: netArpu };
+           plateau: plateau, plAd: plAd, plateauProfit: plateauProfit, plateauNodes: plateauNodes, costPerUser: costPerUser,
+           be: be, ltv: ltv, ltvAd: ltvAd, ratioAd: p.cpa > 0 ? ltvAd / p.cpa : Infinity, ratioOrg: p.cac > 0 ? ltv / p.cac : Infinity,
+           netArpu: netArpu, adSpent: adSpent, adUsers: adUsers, cpaPayMonths: netArpu > 0 ? p.cpa / netArpu : Infinity };
 }
 </script>
 <script>
 (function () {
-  var FIELDS = ['seed','newpm','churn','arpu','cac','node','upn','ipres','fixed','pay','tax','store','upfront','extra'];
+  var FIELDS = ['seed','newpm','churn','arpu','cac','adbud','cpa','rampx','rampm','churnad','node','upn','ipres','fixed','pay','tax','store','upfront','extra'];
   var $ = function (id) { return document.getElementById(id); };
   var nf = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
   var fmt = function (n) { return nf.format(Math.round(n)); };
@@ -285,12 +307,16 @@ function model(p) {
     setV('kBE', r.be === null ? 'не сходится' : fmt(r.be) + ' чел.', r.be === null ? 'bad' : '');
     setV('kLTV', isFinite(r.ltv) ? rub(r.ltv) : '∞');
     $('kLTVS').textContent = 'чистыми ' + rub(r.netArpu) + '/мес × ' + (p.churn > 0 ? (100 / p.churn).toFixed(1) : '∞') + ' мес жизни';
-    setV('kRatio', isFinite(r.ratio) ? r.ratio.toFixed(1) : '∞', isFinite(r.ratio) ? (r.ratio >= 3 ? 'good' : (r.ratio >= 1.5 ? 'warn' : 'bad')) : 'good');
+    setV('kRatio', isFinite(r.ratioAd) ? r.ratioAd.toFixed(1) : '∞', isFinite(r.ratioAd) ? (r.ratioAd >= 3 ? 'good' : (r.ratioAd >= 1.5 ? 'warn' : 'bad')) : 'good');
+    $('kRatioS').textContent = 'норма ≥ 3; у рефералки ' + (isFinite(r.ratioOrg) ? r.ratioOrg.toFixed(1) : '∞');
+    setV('kAdPay', isFinite(r.cpaPayMonths) ? r.cpaPayMonths.toFixed(1) + ' мес' : '—', r.cpaPayMonths <= 3 ? 'good' : (r.cpaPayMonths <= 100 / Math.max(p.churnad, 0.1) / 2 ? 'warn' : 'bad'));
+    setV('kAdUsers', p.adbud > 0 && isFinite(r.plAd) ? fmt(r.plAd) : '0');
+    $('kAdUsersS').textContent = p.adbud > 0 ? 'платящих; за 2 года реклама ' + rubK(r.adSpent) + ' → ' + fmt(r.adUsers) + ' оплат' : 'реклама выключена';
 
     var html = '';
     r.rows.forEach(function (x) {
       var mark = (r.payback === x.m) ? ' class="mark"' : '';
-      html += '<tr' + mark + '><td>' + x.m + '</td><td class="num">' + fmt(x.users) + '</td><td class="num">' + fmt(x.rev) + '</td><td class="num">−' + fmt(x.fees) + '</td><td class="num">−' + fmt(x.inf) + ' <span class="note">(' + x.nodes + ' нод)</span></td><td class="num">−' + fmt(x.acq) + '</td><td class="num ' + (x.profit >= 0 ? 'pos' : 'neg') + '">' + fmt(x.profit) + '</td><td class="num ' + (x.cum >= 0 ? 'pos' : 'neg') + '">' + fmt(x.cum) + '</td></tr>';
+      html += '<tr' + mark + '><td>' + x.m + '</td><td class="num">' + fmt(x.users) + ' <span class="note">(' + fmt(x.paid) + ')</span></td><td class="num">' + fmt(x.rev) + '</td><td class="num">−' + fmt(x.fees) + '</td><td class="num">−' + fmt(x.inf) + ' <span class="note">(' + x.nodes + ' нод)</span></td><td class="num">−' + fmt(x.acq) + '</td><td class="num ' + (x.profit >= 0 ? 'pos' : 'neg') + '">' + fmt(x.profit) + '</td><td class="num ' + (x.cum >= 0 ? 'pos' : 'neg') + '">' + fmt(x.cum) + '</td></tr>';
     });
     $('rows').innerHTML = html;
   }
